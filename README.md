@@ -1,5 +1,5 @@
 Here, we will explain how to use the implementation code. But For now, I will just paste the instructions found in "Project11_snn_brain.pdf"
-\I also added the suggested paper pdf to the repository.
+\ I also added the suggested paper pdf to the repository.
 
 # Semester Project 11: Spiking Neural Network for Brain Anomaly Detection
 

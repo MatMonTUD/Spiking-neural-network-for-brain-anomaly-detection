@@ -87,3 +87,9 @@ desktop.ini
 .vscode/
 *.swp
 *~
+
+# --- Data folders ---
+dog_1/
+Test_data/
+Train_data/
+Raw_data/

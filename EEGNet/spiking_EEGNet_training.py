@@ -8,6 +8,7 @@ import Varius as V
 from Spiking_EEGNet_models import num_steps, forward_pass, batch_accuracy
 import Spiking_EEGNet_models as spm
 
+#__This script contains the code to train the spiking neural networks described in Spiking_EEGNet_models__#
 # Set the seed
 V.set_seed(42)
 
@@ -50,8 +51,7 @@ class EEGDataset(Dataset):
         return data_tensor, label_tensor
 
 #Might want to create a val set to avoid any bias
-#train_dataset = EEGDataset("../Train_data")
-#test_dataset = EEGDataset("../Test_data")
+#But for now I'm not using the test set to choose any hyperparameter
 train_dataset = EEGDataset("Train_data")
 test_dataset = EEGDataset("Test_data")
 
@@ -62,7 +62,7 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, dro
 optimizer = torch.optim.Adam(net.parameters(), lr=lr, betas=(0.9, 0.999))
 
 # Weight the classes because one is much more represented
-#Not sure if it's really needed, also the ratio might change
+#Not sure if it's really needed. Also, the ratio might change
 class_weights = torch.tensor([0.70, 1.74], dtype=torch.float32).to(device)
 loss_fn = SF.ce_rate_loss(weight=class_weights)
 
@@ -77,6 +77,8 @@ print(f"Trainable Parameters: {trainable_params:,}")
 print("Starting Training...")
 counter = 0
 test_acc = None
+#I'm using tqdm to get a better looking output during training.
+#It doesn't actually change the training performance.
 for epoch in range(num_epochs):
     pbar = tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}")
     test_acc = batch_accuracy(test_loader, net, num_steps, device)
@@ -90,10 +92,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         loss_val.backward()
         optimizer.step()
-        """
-        if counter % 15 == 0:
-            test_acc = batch_accuracy(test_loader, net, num_steps, device)
-        """
+
         info = {"loss": f"{loss_val.item():.4f}"}
         if test_acc is not None:
             info["test_acc"] = f"{test_acc * 100:.2f}%"

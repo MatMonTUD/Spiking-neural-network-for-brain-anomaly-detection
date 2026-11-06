@@ -42,6 +42,7 @@ def batch_accuracy(loader, net, num_steps, device):
             total += spk_rec.size(1)
     return acc / total
 
+#This code doesn't work well with spiking and quantised models
 def save_model(net, save_flag, model_name):
     if save_flag == 1:
         os.makedirs("../Models", exist_ok=True)
@@ -123,7 +124,7 @@ def get_quant_EEGNet():
         snn.Leaky(beta=beta, spike_grad=spike_grad, init_hidden=True, output=True),
     )
 
-#It takes 200+ epochs but it gets to a very good accuracy
+#It takes 200+ epochs, but it reaches a very good accuracy
 def get_quant_EEGNet_nano():
     spike_grad = surrogate.atan()
     bits = 2

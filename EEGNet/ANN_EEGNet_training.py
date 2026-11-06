@@ -9,6 +9,7 @@ from EEGNet_models import forward_pass, batch_accuracy
 import EEGNet_models as spm
 
 #__This script contains the code to train the spiking neural networks described in EEGNet_models__#
+#__                    It was mostly copied from the spiking script                             __#
 
 # Set the seed
 V.set_seed(42)

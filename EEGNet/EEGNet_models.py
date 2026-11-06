@@ -6,7 +6,6 @@ import os
 #__This script contains some functions used to train the non-spiking models, __#
 #__        together with the architecture description of said models         __#
 
-
 def forward_pass(net, data):
     return net(data)
 
@@ -23,6 +22,7 @@ def batch_accuracy(loader, net, device):
             total += out.size(0)
     return acc / total
 
+#This code doesn't work well with spiking and quantised models
 def save_model(net, save_flag, model_name):
     if save_flag == 1:
         os.makedirs("../Models", exist_ok=True)
@@ -98,7 +98,7 @@ def get_quant_EEGNet():
         qnn.QuantLinear(16 * (400 // 32), 2, weight_bit_width=bits, bias=True),
     )
 
-#It takes 200+ epochs but it gets to a very good accuracy
+#It takes 200+ epochs, but it reaches a very good accuracy
 def get_quant_EEGNet_nano():
     bits = 2
     return nn.Sequential(

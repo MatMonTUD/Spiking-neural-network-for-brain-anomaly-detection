@@ -33,6 +33,39 @@ def save_model(net, save_flag, model_name):
         torch.save(net, filepath)
         print(f"Model saved to {filepath}")
 
+@torch.no_grad()
+def evaluate_confusion(loader, net, device, num_classes=2):
+    net.eval()
+    cm = torch.zeros(num_classes, num_classes, dtype=torch.long)  # rows: true, cols: predicted
+    for data, targets in loader:
+        data, targets = data.to(device), targets.to(device)
+        preds = forward_pass(net, data).argmax(dim=1)
+        for t, p in zip(targets.cpu(), preds.cpu()):
+            cm[t, p] += 1
+    return cm
+
+def report_results(net, loader, device, net_name, seed, num_epochs, total_params):
+    cm = evaluate_confusion(loader, net, device)
+    final_acc = cm.diag().sum().item() / cm.sum().item()
+
+    # Row-normalized: each row sums to 100%
+    row_sums = cm.sum(dim=1, keepdim=True).clamp(min=1)  # avoid division by zero
+    cm_pct = cm.float() / row_sums * 100
+
+    print("\n" + "=" * 40)
+    print(f"Model:            {net_name}")
+    print(f"Seed:             {seed}")
+    print(f"Epochs:           {num_epochs}")
+    print(f"Total parameters: {total_params:,}")
+    print(f"Test accuracy:    {final_acc * 100:.2f}%")
+    print("Confusion matrix, % of each actual class (rows = actual, cols = predicted):")
+    print("                  pred interictal   pred ictal")
+    print(f"  actual interictal   {cm_pct[0, 0].item():10.2f}%  {cm_pct[0, 1].item():10.2f}%")
+    print(f"  actual ictal        {cm_pct[1, 0].item():10.2f}%  {cm_pct[1, 1].item():10.2f}%")
+    print("=" * 52)
+
+    return cm, cm_pct, final_acc
+
 #This is the architecture inspired by EEGNet.
 # It's actually a bit different, to adapt it to the data used here
 def get_EEGNet():

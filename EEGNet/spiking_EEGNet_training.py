@@ -10,7 +10,8 @@ import Spiking_EEGNet_models as spm
 
 #__This script contains the code to train the spiking neural networks described in Spiking_EEGNet_models__#
 # Set the seed
-V.set_seed(42)
+seed = 42 #change the seed here
+V.set_seed(seed)
 
 # Setup Device & Hyperparameters
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -99,6 +100,16 @@ for epoch in range(num_epochs):
         pbar.set_postfix(info)
 
         counter += 1
+
+#prints some useful info at the end of the training
+cm, cm_pct, final_acc = spm.report_results(
+    net, test_loader, device, num_steps,
+    net_name=net_name,
+    seed=seed,
+    num_epochs=num_epochs,
+    total_params=total_params,
+)
+
 save_flag = 0 #set to 1 if you want to save the model
 #at the moment it gives an error because it doesn't recognize surrogate.atan or something like that
 spm.save_model(net,  save_flag, model_name=net_name) # DON'T FORGET TO CHANGE THE NAME!!

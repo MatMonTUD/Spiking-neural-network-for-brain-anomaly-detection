@@ -12,12 +12,13 @@ import EEGNet_models as spm
 #__                    It was mostly copied from the spiking script                             __#
 
 # Set the seed
-V.set_seed(42)
+seed = 42 #change the seed here
+V.set_seed(seed)
 
 # Setup Device & Hyperparameters
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 batch_size = 64
-num_epochs = 50
+num_epochs = 250
 lr = 1e-3
 
 save_flag = 0 #set to 1 if you want to save the model (but it doesn't work well at the moment)
@@ -102,6 +103,14 @@ for epoch in range(num_epochs):
         pbar.set_postfix(info)
 
         counter += 1
+#prints some useful info at the end of the training
+cm, cm_pct, final_acc = spm.report_results(
+    net, test_loader, device,
+    net_name=net_name,
+    seed=seed,
+    num_epochs=num_epochs,
+    total_params=total_params,
+)
 
 #It still doesn't work for quantised models. I will change it later, if I don't forget
 spm.save_model(net,  save_flag, model_name=net_name) #
